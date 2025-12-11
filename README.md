@@ -12,7 +12,7 @@ The system is designed with a focus on **scalability** and **security best pract
 * **Data Format:** JSON Serialization (`{"device": "id", "temp": 24.0...}`) for interoperability with Node-RED, AWS IoT, or Azure.
 * **Resilience:** Automatic Wi-Fi and MQTT reconnection logic.
 * **Security:** Credentials are decoupled from the source code using a `secrets.h` file pattern (GitOps best practice).
-
+* **Energy Efficiency;** Deep Sleep mode integration (10s sleep cycle) for battery-powered operation.
 ## Project Structure
 ```text
 /firmware
@@ -41,7 +41,7 @@ The system is designed with a focus on **scalability** and **security best pract
 
  ## Future Improvements (Roadmap)
 * [ ] Implementation of TLS/SSL (MQTTS) for encrypted communication.
-* [ ] Deep Sleep mode integration for battery optimization.
+* [x] Deep Sleep mode integration for battery optimization.
 * [ ] Integration with a Time Series Database (InfluxDB) and Grafana.
 
 ## Credits & Acknowledgements
