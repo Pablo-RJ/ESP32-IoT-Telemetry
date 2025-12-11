@@ -7,100 +7,91 @@
 // --- 1. CONFIGURACIÓN DEL SENSOR DHT11 ---
 #define DHTPIN 4      // Pin digital del ESP32 donde está conectado el sensor DHT
 #define DHTTYPE DHT11 // Tipo de sensor: DHT11 (o usa DHT22 si es el caso)
+DHT dht(DHTPIN, DHTTYPE);
 
-// --- 1. CONFIGURACIÓN DE LA RED WIFI (Usando secrets.h) ---
+// --- 2. CONFIGURACIÓN DE LA RED WIFI (Usando secrets.h) ---
 const char* ssid = SECRET_SSID;         
 const char* password = SECRET_PASS;        
-
-// --- 2. CONFIGURACIÓN DEL BROKER MQTT (Usando secrets.h) ---
+// --- 3. CONFIGURACIÓN DEL BROKER MQTT (Usando secrets.h) ---
 const char* mqtt_server = SECRET_MQTT_SERVER;         
 const int mqtt_port = SECRET_MQTT_PORT;                       
-const char* mqtt_client_id = "ESP32_Edge_Node_v1";   
-
+const char* mqtt_client_id = "ESP32_DeepSleep_Node";   
+// --- 4. CONFIGURACION DE DEEP SLEEP ---
+#define uS_TO_S_FACTOR 1000000ULL  /* Factor de conversión de microsegundos a segundos */
+#define TIME_TO_SLEEP  10          /* Tiempo que dormirá (en segundos) */
 // -- TOPICOS --
 const char* mqtt_topic_temp = "esp/datos/temperatura"; 
 
-// Objetos requeridos
-WiFiClient espClient;            
-PubSubClient client(espClient);  
-long lastMsg = 0;                
-char msg[150];                 
+// Objetos
+WiFiClient espClient;
+PubSubClient client(espClient);
+char msg[150];
 
-// Inicializa el objeto DHT
-DHT dht(DHTPIN, DHTTYPE);
-
-// =========================================================
-// FUNCIONES DE SOPORTE
-// =========================================================
-
-// Intenta reconectar el cliente MQTT al broker.
 void reconnect() {
-  // Bucle hasta que estemos reconectados
+  // Loop simple para reconectar si falla (bloqueante)
   while (!client.connected()) {
-    Serial.print("Intentando conexión MQTT...");
-    // Intenta conectar usando el ID del cliente
+    Serial.print("Conectando a MQTT...");
     if (client.connect(mqtt_client_id)) {
       Serial.println("Conectado!");
     } else {
       Serial.print("falló, rc=");
       Serial.print(client.state());
-      Serial.println(" Intentando de nuevo en 5 segundos");
-      delay(5000);
+      Serial.println(" reintentando en 2s...");
+      delay(2000);
     }
   }
 }
 
-// =========================================================
-// SETUP Y LOOP
-// =========================================================
-
 void setup() {
-  // Inicia la comunicación serial para depuración y monitoreo
   Serial.begin(115200);
-  // Conecta a Wi-Fi (esta función incluye la impresión de la IP local del ESP32)
-  conectar_wifi_e_imprimir_ip(ssid, password);
-  // Configura la dirección IP y el puerto del Broker MQTT para la librería  
-  client.setServer(mqtt_server, mqtt_port);
-  
-  // AÑADIDO: Inicializa el sensor DHT
+  delay(1000); // Pequeña espera para que el monitor serie arranque
+
+  // 1. Iniciar Sensor
   dht.begin();
-  Serial.println("Sensor DHT inicializado.");
-}
+  Serial.println("Despertando... Sensor iniciado.");
 
+  // 2. Conectar WiFi (Usamos tu librería auxiliar)
+  conectar_wifi_e_imprimir_ip(ssid, password);
 
-void loop() {
-  // Asegúrate de que el cliente esté conectado antes de publicar
+  // 3. Conectar MQTT
+  client.setServer(mqtt_server, mqtt_port);
   if (!client.connected()) {
     reconnect();
   }
-  
-  client.loop(); // Permite al cliente MQTT mantener su conexión
-  long now = millis();
 
-  // Publicar cada 5 segundos (5000 milisegundos)
-  if (now - lastMsg > 2000) {
-    lastMsg = now;
+  // 4. Leer datos
+  float t = dht.readTemperature();
+  float h = dht.readHumidity();
 
-    // 1. Leer el sensor
-    float t = dht.readTemperature();
-    float h = dht.readHumidity(); // La humedad es un buen dato para incluir
-
-    // 2. Comprobar si la lectura es válida
-    if (isnan(t) || isnan(h)) {
-      Serial.println("¡Error! Falló la lectura del sensor DHT.");
-      return; // Salimos sin publicar
-    }
-
-    // 3. Crear el mensaje JSON (Fácil de analizar para tu servidor)
-    // %.2f asegura 2 decimales para la temperatura
-    snprintf (msg, 150, 
-                "{\"dispositivo\":\"%s\",\"temperatura\":%.2f,\"humedad\":%.0f,\"timestamp\":%ld}", 
-                mqtt_client_id, t, h, now / 1000);
-
-    Serial.print("Publicando JSON: ");
+  // Verificar lecturas
+  if (isnan(t) || isnan(h)) {
+    Serial.println("Error leyendo el sensor DHT");
+    // Incluso si falla, enviamos error o simplemente dormimos
+  } else {
+    // 5. Enviar Datos
+    snprintf(msg, 150, 
+            "{\"dispositivo\":\"%s\",\"temperatura\":%.2f,\"humedad\":%.0f,\"modo\":\"deep_sleep\"}", 
+            mqtt_client_id, t, h);
+            
+    Serial.print("Publicando: ");
     Serial.println(msg);
-
-    // 4. Publicar en el tópico configurado
     client.publish(mqtt_topic_temp, msg);
+    
+    // IMPORTANTE: Dar tiempo al buffer de red para enviar antes de cortar la energía
+    delay(500); 
   }
+
+  // 6. Preparar el sueño
+  Serial.println("Entrando en Deep Sleep...");
+  client.disconnect(); // Desconexión limpia MQTT
+  
+  // Configurar el temporizador de despertar
+  esp_deep_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+  
+  // Iniciar Deep Sleep (Aquí se apaga todo)
+  esp_deep_sleep_start();
+}
+
+void loop() {
+  // En Deep Sleep, el loop NUNCA se ejecuta.
 }
