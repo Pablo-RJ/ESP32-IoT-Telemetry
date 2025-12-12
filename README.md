@@ -2,26 +2,35 @@
 ![Language](https://img.shields.io/badge/language-C%2B%2B-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-ESP32-orange.svg)
 ![Protocol](https://img.shields.io/badge/protocol-MQTT-green.svg)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)
+![Node-RED](https://img.shields.io/badge/Node--RED-%238F0000.svg?style=flat&logo=nodered&logoColor=white)
 ## Overview
-This project implements a secure **IoT Edge Node** using an **ESP32** microcontroller. It captures environmental data (Temperature & Humidity) via a **DHT11** sensor and transmits it wirelessly using the **MQTT** protocol.
+This project implements a secure, full-stack **IoT Edge Node** architecture. It captures environmental data (Temperature & Humidity) via an **ESP32** and transmits it wirelessly using the **MQTT** protocol to a containerized backend.
 
-The system is designed with a focus on **scalability** and **security best practices**, featuring decoupled credentials, non-blocking I/O architecture, and standardized JSON payloads for easy Cloud/Backend integration.
+The system is designed with a focus on **scalability** and **security best practices**, featuring decoupled credentials, non-blocking I/O, Deep Sleep power optimization, and a Dockerized infrastructure ready for deployment.
 
 ## Key Features
 * **Protocol:** MQTT (Lightweight Pub/Sub messaging).
-* **Data Format:** JSON Serialization (`{"device": "id", "temp": 24.0...}`) for interoperability with Node-RED, AWS IoT, or Azure.
+* **Data Format:** JSON Serialization (`{"device": "id", "temp": 24.0...}`) for interoperability with Cloud services.
 * **Resilience:** Automatic Wi-Fi and MQTT reconnection logic.
-* **Security:** Credentials are decoupled from the source code using a `secrets.h` file pattern (GitOps best practice).
-* **Energy Efficiency;** Deep Sleep mode integration (10s sleep cycle) for battery-powered operation.
+* **Security:** Credentials decoupled via `secrets.h` (GitOps best practice) and sensitive tokens excluded from version control.
+* **Energy Efficiency:** Deep Sleep mode integration (10s sleep cycle) for battery-powered operation.
+* **Infrastructure as Code:** Full backend stack (Broker + Logic) defined in `docker-compose.yml`.
+
 ## Project Structure
 ```text
-/firmware
-  └── /Edge_Telemetry_Node
-       ├── Edge_Telemetry_Node.ino  # Main application logic
-       ├── WifiUtils.h              # Network connection helper
-       ├── secrets_example.h        # Template for credentials (Public)
-       └── secrets.h                # (Ignored by Git) Local credentials
-````
+/ESP32-IoT-Telemetry
+├── /backend                    # Server-side configuration
+│   ├── /node_red_data          # Logic flows & settings (Pre-configured)
+│   └── mosquitto.conf          # MQTT Broker configuration
+├── /firmware
+│   └── /Edge_Telemetry_Node    # ESP32 C++ Firmware
+│       ├── Edge_Telemetry_Node.ino
+│       ├── WifiUtils.h
+│       └── secrets_example.h
+├── docker-compose.yml          # Container orchestration script
+└── README.md
+
 ## Hardware Requirements
 * **Microcontroller:** ESP32 DevKit V1.
 * **Sensor:** DHT11 (Temperature & Humidity).
@@ -38,6 +47,19 @@ The system is designed with a focus on **scalability** and **security best pract
     * Open `Edge_Telemetry_Node.ino` in Arduino IDE.
     * Install required libraries: `PubSubClient` and `DHT sensor library`.
     * Upload the firmware to the ESP32.
+
+## 🐳 Backend Deployment (Docker)
+
+This project includes a fully containerized infrastructure using **Docker Compose**. It automatically sets up the MQTT Broker and the Logic Layer (Node-RED).
+
+### Prerequisites
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed.
+
+### Quick Start
+1. Navigate to the project root directory.
+2. Run the stack:
+   ```bash
+   docker-compose up -d
 
  ## Future Improvements (Roadmap)
 * [ ] Implementation of TLS/SSL (MQTTS) for encrypted communication.
