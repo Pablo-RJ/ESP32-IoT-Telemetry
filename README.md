@@ -48,7 +48,7 @@ The system is designed with a focus on **scalability** and **security best pract
     * Install required libraries: `PubSubClient` and `DHT sensor library`.
     * Upload the firmware to the ESP32.
 
-## 🐳 Backend Deployment (Docker)
+## 🐳Backend Deployment (Docker)
 
 This project includes a fully containerized infrastructure using **Docker Compose**. It automatically sets up the MQTT Broker and the Logic Layer (Node-RED).
 
@@ -61,7 +61,7 @@ This project includes a fully containerized infrastructure using **Docker Compos
    ```bash
    docker-compose up -d
 
- ## Future Improvements (Roadmap)
+ ## 🚀Future Improvements (Roadmap)
 * [ ] Implementation of TLS/SSL (MQTTS) for encrypted communication.
 * [x] Deep Sleep mode integration for battery optimization.
 * [ ] Integration with a Time Series Database (InfluxDB) and Grafana.
