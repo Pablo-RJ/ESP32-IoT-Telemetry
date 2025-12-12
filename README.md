@@ -30,7 +30,7 @@ The system is designed with a focus on **scalability** and **security best pract
 │       └── secrets_example.h
 ├── docker-compose.yml          # Container orchestration script
 └── README.md
-
+```
 ## Hardware Requirements
 * **Microcontroller:** ESP32 DevKit V1.
 * **Sensor:** DHT11 (Temperature & Humidity).
