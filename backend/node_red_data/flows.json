@@ -1,0 +1,60 @@
+[
+    {
+        "id": "465aea49f3c10cbe",
+        "type": "tab",
+        "label": "Flujo 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "5907f3e6e99e1a60",
+        "type": "mqtt-broker",
+        "name": "Mosquitto Docker",
+        "broker": "mosquitto",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "87cca4b419a25451",
+        "type": "mqtt in",
+        "z": "465aea49f3c10cbe",
+        "name": "",
+        "topic": "test/estadi",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "5907f3e6e99e1a60",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 120,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    }
+]

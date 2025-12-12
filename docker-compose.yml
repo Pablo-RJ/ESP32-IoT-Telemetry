@@ -1,0 +1,32 @@
+services:
+  # 1. BROKER MQTT (Mosquitto)
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: iot_broker
+    ports:
+      - "1883:1883"  # Puerto estándar MQTT
+      - "9001:9001"  # Puerto WebSockets
+    volumes:
+      - ./backend/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    restart: unless-stopped
+
+  # 2. LOGIC & DASHBOARD (Node-RED)
+  nodered:
+    image: nodered/node-red:latest
+    container_name: iot_brain
+    ports:
+      - "1880:1880"  # Interfaz Web
+    environment:
+      - TZ=Europe/Madrid
+    volumes:
+      - ./backend/node_red_data:/data
+    depends_on:
+      - mosquitto
+    restart: unless-stopped
+
+# Volúmenes persistentes
+volumes:
+  mosquitto_data:
+  mosquitto_log:

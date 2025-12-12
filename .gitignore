@@ -1,0 +1,15 @@
+# --- Docker & Backend Ignore Rules ---
+*.log
+
+# Ignorar TODAS las carpetas de librerías y caché
+backend/node_red_data/node_modules/
+backend/node_red_data/.npm/
+backend/node_red_data/lib/
+
+# Ignorar archivos temporales y de estado
+backend/node_red_data/.config.*
+backend/node_red_data/*.backup
+backend/node_red_data/.sessions.json
+
+# SEGURIDAD: Ignorar las credenciales (si quieres ser precavido)
+backend/node_red_data/flows_cred.json
