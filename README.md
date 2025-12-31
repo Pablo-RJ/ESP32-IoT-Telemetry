@@ -4,12 +4,12 @@
 ![Protocol](https://img.shields.io/badge/protocol-MQTT-green.svg)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)
 ![Node-RED](https://img.shields.io/badge/Node--RED-%238F0000.svg?style=flat&logo=nodered&logoColor=white)
-## Overview
+## 🔍Overview
 This project implements a secure, full-stack **IoT Edge Node** architecture. It captures environmental data (Temperature & Humidity) via an **ESP32** and transmits it wirelessly using the **MQTT** protocol to a containerized backend.
 
 The system is designed with a focus on **scalability** and **security best practices**, featuring decoupled credentials, non-blocking I/O, Deep Sleep power optimization, and a Dockerized infrastructure ready for deployment.
 
-## Key Features
+## 🎯Key Features
 * **Protocol:** MQTT (Lightweight Pub/Sub messaging).
 * **Data Format:** JSON Serialization (`{"device": "id", "temp": 24.0...}`) for interoperability with Cloud services.
 * **Resilience:** Automatic Wi-Fi and MQTT reconnection logic.
@@ -17,7 +17,7 @@ The system is designed with a focus on **scalability** and **security best pract
 * **Energy Efficiency:** Deep Sleep mode integration (10s sleep cycle) for battery-powered operation.
 * **Infrastructure as Code:** Full backend stack (Broker + Logic) defined in `docker-compose.yml`.
 
-## Project Structure
+## 📁Project Structure
 ```text
 /ESP32-IoT-Telemetry
 ├── /backend                    # Server-side configuration
@@ -31,13 +31,12 @@ The system is designed with a focus on **scalability** and **security best pract
 ├── docker-compose.yml          # Container orchestration script
 └── README.md
 ```
-## Hardware Requirements
+## ⚙️Hardware Requirements
 * **Microcontroller:** ESP32 DevKit V1.
 * **Sensor:** DHT11 (Temperature & Humidity).
 * **Connection:** DHT11 Data Pin connected to GPIO 4.
 
-## Setup & Installation
-
+## ⬇️Setup & Installation
 1.  **Clone or Download** this repository.
 2.  **Configuration:**
     * Navigate to `/firmware/Edge_Telemetry_Node/`.
@@ -49,7 +48,6 @@ The system is designed with a focus on **scalability** and **security best pract
     * Upload the firmware to the ESP32.
 
 ## 🐳Backend Deployment (Docker)
-
 This project includes a fully containerized infrastructure using **Docker Compose**. It automatically sets up the MQTT Broker and the Logic Layer (Node-RED).
 
 ### Prerequisites
@@ -66,7 +64,7 @@ This project includes a fully containerized infrastructure using **Docker Compos
 * [x] Deep Sleep mode integration for battery optimization.
 * [ ] Integration with a Time Series Database (InfluxDB) and Grafana.
 
-## Credits & Acknowledgements
+## 📜Credits & Acknowledgements
 * **Lead Maintainer:** [Pablo Rodriguez Jimenez](https://github.com/Pablo-RJ) - Currently developing version 2.0+ (Security refactor & Cloud Integration).
 * **Original Co-author:** [Pedro Alfonso Quiles García](https://github.com/pquigar) - Collaborated on the initial prototype logic for the university course.
 ---
